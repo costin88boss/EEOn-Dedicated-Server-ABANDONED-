@@ -31,7 +31,7 @@ public class  PlayerUpdateListener implements Listener {
                 newPacket.newSmiley = packet.newSmiley;
             }
             newPacket.newAura = -1;
-            if (packet.newAura >= 0 && packet.newAura <= 14) {
+            if (packet.newAura >= 0 && packet.newAura <= 17) {
                 newPacket.newAura = packet.newAura;
                 ply.setAura(packet.newAura);
             }
