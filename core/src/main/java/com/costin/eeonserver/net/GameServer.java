@@ -1,5 +1,6 @@
 package com.costin.eeonserver.net;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.costin.eeonserver.game.players.CollFilter;
 import com.costin.eeonserver.game.players.PlayerManager;
@@ -25,6 +26,7 @@ import com.esotericsoftware.minlog.Log;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +82,7 @@ public class GameServer {
         new PlayerManager();
         new CollFilter();
 
-        WorldManager.getInstance().EEWorld = EELevel.read("save/EEOn");
+        WorldManager.getInstance().EEWorld = EELevel.read("assets/EEOn");
 
         try {
             website = HttpServer.create(new InetSocketAddress(80), 0);
@@ -90,6 +92,13 @@ public class GameServer {
         }
 
         website.createContext("/", new RootHandler());
+        website.createContext("/favicon.ico", t -> {
+            byte[] bytes = Gdx.files.internal("assets/website/favicon.ico").readBytes();
+            t.sendResponseHeaders(200, bytes.length);
+            try (OutputStream os = t.getResponseBody()) {
+                os.write(bytes);
+            }
+        });
         website.setExecutor(null);
 
         Log.info("eeon", "Loaded game resources, starting server and webpage.");
