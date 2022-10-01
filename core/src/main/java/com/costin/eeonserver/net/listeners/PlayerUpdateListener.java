@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.costin.eeonserver.game.players.Player;
 import com.costin.eeonserver.game.players.PlayerManager;
 import com.costin.eeonserver.net.GameServer;
+import com.costin.eeonserver.net.packets.player.JoinRequestPacket;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePacket;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerUpdatePacket;
 import com.costin.eeonserver.net.packets.player.updates.serverside.ServerPlyUpdatePacket;
@@ -13,12 +14,14 @@ import com.esotericsoftware.kryonet.Listener;
 public class PlayerUpdateListener implements Listener {
     @Override
     public void received(Connection connection, Object object) {
-        if(object instanceof PlayerMovePacket packet) {
+        if(object instanceof PlayerMovePacket) {
+            PlayerMovePacket packet = (PlayerMovePacket) object;
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
             if(ply == null) return;
             ply.updatePacket(packet, connection);
         }
-        if(object instanceof PlayerUpdatePacket packet) {
+        if(object instanceof PlayerUpdatePacket) {
+            PlayerUpdatePacket packet = (PlayerUpdatePacket) object;
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
             if(ply == null) return;
             ply.setGodMode(packet.hasGodMode);

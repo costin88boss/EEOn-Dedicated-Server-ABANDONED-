@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-sourceCompatibility = 16
+sourceCompatibility = 8
 mainClassName = 'com.costin.eeonserver.headless.HeadlessLauncher'
 eclipse.project.name = appName + '-headless'
 

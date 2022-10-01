@@ -40,7 +40,8 @@ public class JoinLeaveListener implements Listener {
 
     @Override
     public void received(Connection connection, Object object) {
-        if(object instanceof JoinRequestPacket oldPacket) {
+        if(object instanceof JoinRequestPacket) {
+            JoinRequestPacket oldPacket = (JoinRequestPacket) object;
             if(PlayerManager.getInstance().players.get(connection.getID()) != null) return;
             if(!Objects.equals(oldPacket.clientVersion, Laws.clientVersion)) {
                 int major, minor, revision;
