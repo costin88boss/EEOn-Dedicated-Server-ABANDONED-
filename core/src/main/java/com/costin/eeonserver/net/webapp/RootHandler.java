@@ -15,9 +15,9 @@ public class  RootHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange he) throws IOException {
+        if(!he.getRemoteAddress().getHostName().equals("0:0:0:0:0:0:0:1")) return;
         FileHandle handle = Gdx.files.internal("website/" + he.getRequestURI().getPath());
         FileHandle index = handle.child("index.html");
-        System.out.println(handle.path());
         String response;
         if (!handle.exists() || !index.exists()) {
             response = notFound;
