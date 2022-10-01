@@ -6,30 +6,30 @@ mainClassName = 'com.costin.eeonserver.headless.HeadlessLauncher'
 eclipse.project.name = appName + '-headless'
 
 dependencies {
-	implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-	implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-	implementation project(':core')
+    implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation project(':core')
 }
 
 run {
-	workingDir = rootProject.file('assets').path
-	setIgnoreExitValue(true)
+    workingDir = rootProject.file('assets').path
+    setIgnoreExitValue(true)
 }
 
 jar {
-	archiveBaseName.set(appName)
-	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-	dependsOn configurations.runtimeClasspath
-	from('assets') {
-		include '*'
-	}
-	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
-	manifest {
-		attributes 'Main-Class': project.mainClassName
-	}
-	doLast {
-		file(archiveFile).setExecutable(true, false)
-	}
+    archiveBaseName.set(appName)
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    dependsOn configurations.runtimeClasspath
+    from('assets') {
+        include '*'
+    }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes 'Main-Class': project.mainClassName
+    }
+    doLast {
+        file(archiveFile).setExecutable(true, false)
+    }
 }
 
 // Equivalent to the jar task; here for compatibility with gdx-setup.

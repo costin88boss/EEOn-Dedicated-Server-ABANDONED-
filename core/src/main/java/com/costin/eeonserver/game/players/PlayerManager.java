@@ -4,7 +4,7 @@ import com.costin.eeonserver.net.packets.player.PlayerPacket;
 
 import java.util.HashMap;
 
-public class PlayerManager {
+public class  PlayerManager {
 
     private static PlayerManager singleton;
     public final HashMap<Integer, Player> players;

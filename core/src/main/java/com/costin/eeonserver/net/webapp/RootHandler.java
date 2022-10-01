@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public class RootHandler implements HttpHandler {
+public class  RootHandler implements HttpHandler {
 
     private final String notFound = Gdx.files.internal("notFound.html").readString();
 
@@ -18,7 +18,7 @@ public class RootHandler implements HttpHandler {
         FileHandle handle = Gdx.files.internal("website/" + he.getRequestURI().getPath());
         FileHandle index = handle.child("index.html");
         System.out.println(handle.path());
-        String response = "";
+        String response;
         if (!handle.exists() || !index.exists()) {
             response = notFound;
             he.sendResponseHeaders(404, response.length());

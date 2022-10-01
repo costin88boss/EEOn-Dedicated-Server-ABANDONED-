@@ -1,6 +1,6 @@
 package com.costin.eeonserver.net.packets.player.updates.serverside;
 
-public class ServerMovePacket {
+public class  ServerMovePacket {
     public int id;
     public float x, y;
     public float vXDiff, vYDiff;

@@ -6,7 +6,7 @@ import com.dongbat.jbump.Item;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockGroup {
+public class  BlockGroup {
     public final int blockId;
     public final int layer;
     public final List<Integer> xPositions;
@@ -33,8 +33,9 @@ public class BlockGroup {
     }
 
     // BaseBlock = block with no stuff like rotation, etc.
-    public static class BaseBlock extends GameObject {
+    public static class  BaseBlock extends GameObject {
         int x, y, id, layer;
+
         public BaseBlock(int x, int y, int id, int layer) {
             super();
             this.x = x;

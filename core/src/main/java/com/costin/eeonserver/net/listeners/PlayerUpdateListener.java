@@ -4,35 +4,34 @@ import com.badlogic.gdx.graphics.Color;
 import com.costin.eeonserver.game.players.Player;
 import com.costin.eeonserver.game.players.PlayerManager;
 import com.costin.eeonserver.net.GameServer;
-import com.costin.eeonserver.net.packets.player.JoinRequestPacket;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePacket;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerUpdatePacket;
 import com.costin.eeonserver.net.packets.player.updates.serverside.ServerPlyUpdatePacket;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-public class PlayerUpdateListener implements Listener {
+public class  PlayerUpdateListener implements Listener {
     @Override
     public void received(Connection connection, Object object) {
-        if(object instanceof PlayerMovePacket) {
+        if (object instanceof PlayerMovePacket) {
             PlayerMovePacket packet = (PlayerMovePacket) object;
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
-            if(ply == null) return;
+            if (ply == null) return;
             ply.updatePacket(packet, connection);
         }
-        if(object instanceof PlayerUpdatePacket) {
+        if (object instanceof PlayerUpdatePacket) {
             PlayerUpdatePacket packet = (PlayerUpdatePacket) object;
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
-            if(ply == null) return;
+            if (ply == null) return;
             ply.setGodMode(packet.hasGodMode);
             ServerPlyUpdatePacket newPacket = new ServerPlyUpdatePacket();
             newPacket.newSmiley = -1;
-            if(packet.newSmiley >= 0 && packet.newSmiley < 189) {
+            if (packet.newSmiley >= 0 && packet.newSmiley < 189) {
                 ply.setSmiley(packet.newSmiley);
                 newPacket.newSmiley = packet.newSmiley;
             }
             newPacket.newAura = -1;
-            if(packet.newAura >= 0 && packet.newAura <= 14) {
+            if (packet.newAura >= 0 && packet.newAura <= 14) {
                 newPacket.newAura = packet.newAura;
                 ply.setAura(packet.newAura);
             }

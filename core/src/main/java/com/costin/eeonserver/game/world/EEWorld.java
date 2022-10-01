@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EEWorld {
+public class  EEWorld {
     public final List<BlockGroup> blocks;
     public String owner;
     public String title;

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class JoinLeaveListener implements Listener {
+public class  JoinLeaveListener implements Listener {
     @Override
     public void connected(Connection connection) {
         connection.setTimeout(5000);
@@ -28,7 +28,7 @@ public class JoinLeaveListener implements Listener {
     @Override
     public void disconnected(Connection connection) {
         Player player = PlayerManager.getInstance().players.remove(connection.getID());
-        if(player == null) return;
+        if (player == null) return;
         WorldManager.getInstance().collWorld.remove(player);
         WorldManager.getInstance().collWorld.remove(player.innerCollision);
         WorldManager.getInstance().collWorld.remove(player.actionCollision);
@@ -40,10 +40,10 @@ public class JoinLeaveListener implements Listener {
 
     @Override
     public void received(Connection connection, Object object) {
-        if(object instanceof JoinRequestPacket) {
+        if (object instanceof JoinRequestPacket) {
             JoinRequestPacket oldPacket = (JoinRequestPacket) object;
-            if(PlayerManager.getInstance().players.get(connection.getID()) != null) return;
-            if(!Objects.equals(oldPacket.clientVersion, Laws.clientVersion)) {
+            if (PlayerManager.getInstance().players.get(connection.getID()) != null) return;
+            if (!Objects.equals(oldPacket.clientVersion, Laws.clientVersion)) {
                 int major, minor, revision;
                 ConnectionDenyPacket kickPacket = new ConnectionDenyPacket();
                 try {
@@ -54,10 +54,10 @@ public class JoinLeaveListener implements Listener {
 
                     int[] newVersion = Laws.getVersion();
 
-                    if(newVersion[0] >= major) {
-                        if(newVersion[1] >= minor) {
-                            if(newVersion[2] >= revision) {
-                                if(newVersion[2] == revision) {
+                    if (newVersion[0] >= major) {
+                        if (newVersion[1] >= minor) {
+                            if (newVersion[2] >= revision) {
+                                if (newVersion[2] == revision) {
                                     //wtf?
                                     System.out.println("WTF??");
                                 } else {
@@ -84,8 +84,8 @@ public class JoinLeaveListener implements Listener {
                 connection.close();
                 return;
             }
-            if(oldPacket.desiredSmiley < 0 || oldPacket.desiredSmiley >= 189
-            || oldPacket.desiredAura < 0 || oldPacket.desiredAura > 13) {
+            if (oldPacket.desiredSmiley < 0 || oldPacket.desiredSmiley >= 189
+                    || oldPacket.desiredAura < 0 || oldPacket.desiredAura > 13) {
                 AutoKickPacket kickPacket = new AutoKickPacket();
                 kickPacket.reason = PacketEnums.AutoKickReason.CLIENTSIDE_ERROR;
                 connection.sendTCP(kickPacket);
@@ -97,7 +97,7 @@ public class JoinLeaveListener implements Listener {
             RequestAcceptedPacket packet = new RequestAcceptedPacket();
             packet.newUsername = oldPacket.desiredUsername + PlayerManager.getInstance().players.size();
             packet.x = 16;
-            packet.y = 480-16-16*5; //640, 480;
+            packet.y = 480 - 16 - 16 * 5; //640, 480;
             WorldPacket world = new WorldPacket();
             List<BlockGroupPacket> blockGroupPackets = new ArrayList<>();
             for (BlockGroup group :

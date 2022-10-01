@@ -31,10 +31,11 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class GameServer {
+public class  GameServer {
     static final int port = 20600;
     public static Server server = null;
     public static HttpServer website = null;
+
     private static void registerPackets() {
         server.getKryo().register(JoinRequestPacket.class);
         server.getKryo().register(PlayerJoinPacket.class);
