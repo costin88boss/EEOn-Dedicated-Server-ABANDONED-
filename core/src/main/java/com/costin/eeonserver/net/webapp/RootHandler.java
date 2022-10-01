@@ -11,11 +11,11 @@ import java.nio.charset.StandardCharsets;
 
 public class RootHandler implements HttpHandler {
 
-    private final String notFound = Gdx.files.internal("assets/notFound.html").readString();
+    private final String notFound = Gdx.files.internal("notFound.html").readString();
 
     @Override
     public void handle(HttpExchange he) throws IOException {
-        FileHandle handle = Gdx.files.internal("assets/website/" + he.getRequestURI().getPath());
+        FileHandle handle = Gdx.files.internal("website/" + he.getRequestURI().getPath());
         FileHandle index = handle.child("index.html");
         System.out.println(handle.path());
         String response = "";
@@ -28,7 +28,6 @@ public class RootHandler implements HttpHandler {
         }
         try (OutputStream os = he.getResponseBody()) {
             os.write(response.getBytes(StandardCharsets.UTF_8));
-
         }
     }
 }

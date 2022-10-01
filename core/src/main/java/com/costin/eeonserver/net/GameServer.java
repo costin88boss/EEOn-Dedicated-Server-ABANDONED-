@@ -82,7 +82,7 @@ public class GameServer {
         new PlayerManager();
         new CollFilter();
 
-        WorldManager.getInstance().EEWorld = EELevel.read("assets/EEOn");
+        WorldManager.getInstance().EEWorld = EELevel.read("EEOn");
 
         try {
             website = HttpServer.create(new InetSocketAddress(80), 0);
@@ -93,7 +93,7 @@ public class GameServer {
 
         website.createContext("/", new RootHandler());
         website.createContext("/favicon.ico", t -> {
-            byte[] bytes = Gdx.files.internal("assets/website/favicon.ico").readBytes();
+            byte[] bytes = Gdx.files.internal("website/favicon.ico").readBytes();
             t.sendResponseHeaders(200, bytes.length);
             try (OutputStream os = t.getResponseBody()) {
                 os.write(bytes);

@@ -1,6 +1,7 @@
 apply plugin: 'application'
 
 sourceCompatibility = 8
+sourceSets.main.resources.srcDirs += [rootProject.file('assets').path]
 mainClassName = 'com.costin.eeonserver.headless.HeadlessLauncher'
 eclipse.project.name = appName + '-headless'
 
@@ -10,11 +11,19 @@ dependencies {
 	implementation project(':core')
 }
 
+run {
+	workingDir = rootProject.file('assets').path
+	setIgnoreExitValue(true)
+}
+
 jar {
 	archiveBaseName.set(appName)
 	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 	dependsOn configurations.runtimeClasspath
-	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	from('assets') {
+		include '*'
+	}
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
 	manifest {
 		attributes 'Main-Class': project.mainClassName
 	}
