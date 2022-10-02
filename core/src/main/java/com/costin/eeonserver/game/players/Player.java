@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.costin.eeonserver.game.GameObject;
 import com.costin.eeonserver.game.Laws;
 import com.costin.eeonserver.game.world.WorldManager;
+import com.costin.eeonserver.game.world.items.ItemId;
 import com.costin.eeonserver.net.GameServer;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePacket;
 import com.costin.eeonserver.net.packets.player.updates.serverside.ServerMovePacket;
@@ -60,7 +61,10 @@ public class  Player extends GameObject {
     }
 
     public void setGodMode(boolean godMode) {
-        if (isGrounded && !hasGodMode) vY += Laws.gravity / 5;
+        if (isGrounded && !hasGodMode) {
+            vY += Laws.gravity / 5;
+            y += 1;
+        }
         isGrounded = false;
         hasGodMode = godMode;
     }
@@ -83,6 +87,13 @@ public class  Player extends GameObject {
             auraColor.set(1, 1, 1, 0);
             //rainbowMode = true;
         }
+    }
+
+    public float getCorrectX() {
+        return Math.abs(x - 640);
+    }
+    public float getCorrectY() {
+        return Math.abs(y - 480);
     }
 
     public int getAuraID() {
@@ -232,38 +243,40 @@ public class  Player extends GameObject {
 
             boolean moving = false;
 
-            if (imx != 0) {
+            if(imx != 0 || (ItemId.isLiquid(0) && !hasGodMode)){
                 moving = true;
-            } else if (diffX < 0.1 && diffX > -0.1) {
-                float tx = x % 16;
-                if (tx < 2) {
-                    if (tx < .2) {
-                        x = (int) x;
-                    } else x -= tx / 15;
-                } else if (tx > 14) {
-                    if (tx > 15.8) {
-                        x = (int) x;
-                        x++;
-                    } else x += (tx - 14) / 15;
+            }else if(diffX < 0.1 && diffX > -0.1){
+                float tx = getCorrectX() % 16;
+                if(tx < 2){
+                    if(tx < .2){
+                        x = (int)x;
+                    } else x -= tx/15;
+                }else if(tx > 14){
+                    if(tx > 15.8){
+                        x = (int)x;
+                        x ++;
+                    }else x+= (tx-14)/15;
                 }
 
             }
 
-            if (imy != 0) {
+            if(imy != 0 || (ItemId.isLiquid(0) && !hasGodMode)){
                 moving = true;
-            } else if (diffY < 0.1 && diffY > -0.1) {
-                float ty = y % 16;
-                if (ty < 2) {
-                    if (ty < .2) {
-                        y = (int) y;
-                    } else y -= ty / 15;
-                } else if (ty > 14) {
-                    if (ty > 15.8) {
-                        y = (int) y;
-                        y++;
-                    } else y += (ty - 14) / 15;
-                }
+            }else if(diffY < 0.1 && diffY > -0.1 ){
+                float ty = getCorrectY() % 16;
+                System.out.println(ty);
 
+                if(ty < 2){
+                    if(ty < .2){
+                        y = (int)y;
+                    }else y -= ty/15;
+                }else if(ty > 14){
+
+                    if(ty > 15.8){
+                        y = (int)y;
+                        y ++;
+                    }else y+= (ty-14)/15;
+                }
             }
 
             diffX = 0;
