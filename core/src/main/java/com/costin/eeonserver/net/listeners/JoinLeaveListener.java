@@ -29,6 +29,7 @@ public class  JoinLeaveListener implements Listener {
     public void disconnected(Connection connection) {
         Player player = PlayerManager.getInstance().players.remove(connection.getID());
         if (player == null) return;
+        PlayerManager.getInstance().playerNames.remove(player.getUsername());
         WorldManager.getInstance().collWorld.remove(player);
         WorldManager.getInstance().collWorld.remove(player.innerCollision);
         WorldManager.getInstance().collWorld.remove(player.actionCollision);
@@ -143,6 +144,7 @@ public class  JoinLeaveListener implements Listener {
             WorldManager.getInstance().collWorld.add(player.innerCollision, packet.x, packet.y + 1, 16, 15);
             WorldManager.getInstance().collWorld.add(player.actionCollision, packet.x - 6, packet.y - 6, 12, 12);
             PlayerManager.getInstance().players.put(connection.getID(), player);
+            PlayerManager.getInstance().playerNames.add(player.getUsername());
             GameServer.server.sendToAllExceptTCP(connection.getID(), joinPacket);
             Log.info("eeon", player.getUsername() + " has joined!");
         }

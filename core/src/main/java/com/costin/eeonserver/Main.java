@@ -1,12 +1,15 @@
 package com.costin.eeonserver;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.costin.eeonserver.game.players.Player;
 import com.costin.eeonserver.game.players.PlayerManager;
 import com.costin.eeonserver.game.world.BlockGroup;
 import com.costin.eeonserver.game.world.WorldManager;
 import com.costin.eeonserver.net.GameServer;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ConcurrentModificationException;
 import java.util.Map;
 
@@ -14,6 +17,7 @@ import java.util.Map;
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
 public class  Main implements ApplicationListener {
+
     @Override
     public void create() {
         // Prepare your application here.

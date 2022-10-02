@@ -2,16 +2,19 @@ package com.costin.eeonserver.game.players;
 
 import com.costin.eeonserver.net.packets.player.PlayerPacket;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class  PlayerManager {
 
     private static PlayerManager singleton;
     public final HashMap<Integer, Player> players;
+    public ArrayList<String> playerNames;
 
     public PlayerManager() {
         singleton = this;
         players = new HashMap<>();
+        playerNames = new ArrayList<>();
     }
 
     public static PlayerManager getInstance() {

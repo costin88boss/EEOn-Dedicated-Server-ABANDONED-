@@ -22,7 +22,8 @@ public class  Player extends GameObject {
     private PlayerMovePacket movePacket;
     private boolean sentStop;
     private float diffX, diffY;
-    private boolean isGrounded, hitCeiling;
+    private boolean isGrounded;
+    private boolean hitCeiling;
     private boolean hasGodMode, isGolden;
     private Color auraColor;
     private int smileyID, auraID;
@@ -162,6 +163,7 @@ public class  Player extends GameObject {
                 vY = 0;
             }
 
+            boolean stuckInBlock = false;
             if (!hasGodMode) {
                 Response.Result res = WorldManager.getInstance().collWorld.move(this, x + vX + 1, y + vY + 1, CollFilter.getInstance().blockFilter);
                 boolean canGround = false;
@@ -176,6 +178,10 @@ public class  Player extends GameObject {
                     if (coll.normal.x != 0) {
                         vX = coll.normal.x / 1000f;
                     }
+                    if(coll.overlaps) {
+                        stuckInBlock = true;
+                        break;
+                    }
                 }
                 isGrounded = canGround;
             } else { //640, 480
@@ -183,9 +189,14 @@ public class  Player extends GameObject {
                 y += vY;
                 WorldManager.getInstance().collWorld.update(this, x, y);
             }
+            if(stuckInBlock) {
+                WorldManager.getInstance().collWorld.update(this, x, y);
+                vX = 0;
+                vY = 0;
+            }
             Rect rect = WorldManager.getInstance().collWorld.getRect(this);
             float _x, _y;
-            if (!hasGodMode) {
+            if (!hasGodMode && !stuckInBlock) {
                 _x = rect.x - 1;
                 _y = rect.y - 1;
             } else {

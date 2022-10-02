@@ -1,1 +1,29 @@
 <header>Hello World!</header>
+
+<p>Players: </p>
+<p id="pcount"></p>
+
+<p>World Name: </p>
+<p id="world name"></p>
+
+<p>World Owner: </p>
+<p id="world owner"></p>
+
+<p>Current players:</p>
+<p id="current players"></p>
+
+<script>
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "localhost/data", false ); // false for synchronous request
+    xmlHttp.send( null );
+
+    console.log(xmlHttp.responseText);
+    var obj = JSON.parse(xmlHttp.responseText);
+    console.log(obj);
+    console.log(obj.playerCount);
+
+    document.getElementById("pcount").innerHTML = obj.playerCount;
+    document.getElementById("world name").innerHTML = obj.worldName;
+    document.getElementById("world owner").innerHTML = obj.worldOwner;
+    document.getElementById("current players").innerHTML = obj.players;
+</script>
