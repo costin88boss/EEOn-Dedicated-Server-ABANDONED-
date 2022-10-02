@@ -129,8 +129,6 @@ public class  Player extends GameObject {
                 if (movePacket.yAction == -1) diffY = -(Laws.playerForce / 100);
             }
 
-            //System.out.println(vX);
-
             if (!hasGodMode) {
                 if (isGrounded || hitCeiling) {
                     hitCeiling = false;
@@ -264,7 +262,6 @@ public class  Player extends GameObject {
                 moving = true;
             }else if(diffY < 0.1 && diffY > -0.1 ){
                 float ty = getCorrectY() % 16;
-                System.out.println(ty);
 
                 if(ty < 2){
                     if(ty < .2){
