@@ -1,9 +1,11 @@
 <style>
-    body
-    {
-     font-family: 'Titillium Web';
-     background-color: black;
-     color: white
+    body {
+        font-family: 'Titillium Web';
+        background-color: black;
+        color: white;
+    }
+    textarea {
+        resize: none;
     }
 </style>
 <body>
@@ -12,9 +14,32 @@
 
 <p><span id="pcount">0</span> players currently in</p>
 <p>Players: <span id="current players"></span></p>
+<br>
+<p>Quick actions</p>
+<button onclick="cmdprompt_kick()">Kick</button>
+<button onclick="cmdprompt_ban()">Ban</button>
+<button onclick="cmdprompt_ren_w()">Rename world (N/A)</button>
+<button onclick="cmdprompt_ren_u()">Rename user</button>
+<button onclick="cmdprompt_op()">Op</button>
+<button onclick="cmdprompt_deop()">Deop</button>
+<p><br></p>
+<p>Console. Run commands here</p>
+<textarea id="cmdarea" rows="1" cols="50"></textarea>
+<button onclick="runcmd()">Run</button>
+
+
 </body>
 <script>
     var xmlHttp = new XMLHttpRequest();
+
+    function sendCommand(cmdName) { // function that runs server commands
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "POST", "localhost/data", false );
+        xmlHttp.send(cmdName);
+
+        console.log(xmlHttp.responseText);
+    }
+
     setInterval(function() {
     xmlHttp.open( "GET", "localhost/data", false ); // false for synchronous request
     xmlHttp.send( null );
@@ -23,5 +48,36 @@
     document.getElementById("pcount").innerHTML = obj.playerCount;
     document.getElementById("world name").innerHTML = obj.worldName;
     document.getElementById("world owner").innerHTML = obj.worldOwner;
-    document.getElementById("current players").innerHTML = obj.players;},1000)
+    document.getElementById("current players").innerHTML = obj.players;},1000);
+
+    function cmdprompt_kick() {
+        let username = prompt("Enter the username of the player you want to kick.");
+        if (username != null) {sendCommand(`kick ${username}`)}
+    };
+    function cmdprompt_ban() {
+        let username = prompt("Enter the username of the player you want to ban.");
+        if (username != null) {sendCommand(`ban ${username}`)}
+    };
+    function cmdprompt_ren_w() {
+        alert("This command is not available yet!")
+    }; // Renaming worlds coming soon.
+    function cmdprompt_ren_u() {
+        let username = prompt("Enter username of the player you want to rename.");
+        let newusername = prompt(`Rename player ${username} to...`);
+        if (username != null && newusername != null) {sendCommand(`nick ${username} ${newusername}`)}
+    };
+    function cmdprompt_op() {
+        let username = prompt("Enter username of the player you want to give operator (admin) privileges to.");
+        if (username != null) {sendCommand(`op ${username}`)}
+    };
+    function cmdprompt_deop() {
+        let username = prompt("Enter username of the player to take away operator privileges from.");
+        if (username != null) {sendCommand(`deop ${username}`)}
+    };
+    function runcmd() {
+        let command = document.getElementById("cmdarea").value;
+        sendCommand(command);
+    };
+    
+
 </script>
