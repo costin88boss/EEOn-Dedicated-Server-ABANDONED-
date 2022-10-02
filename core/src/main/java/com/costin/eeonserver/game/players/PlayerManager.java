@@ -9,7 +9,7 @@ public class  PlayerManager {
 
     private static PlayerManager singleton;
     public final HashMap<Integer, Player> players;
-    public ArrayList<String> playerNames;
+    public final ArrayList<String> playerNames;
 
     public PlayerManager() {
         singleton = this;
@@ -23,7 +23,7 @@ public class  PlayerManager {
 
     public HashMap<Integer, PlayerPacket> getPlayersAsPackets() {
         HashMap<Integer, PlayerPacket> plyPackets = new HashMap<>();
-        players.forEach((integer, playerPacket) -> {
+        players.forEach((id , playerPacket) -> {
             PlayerPacket ply = new PlayerPacket();
             ply.x = playerPacket.x;
             ply.y = playerPacket.y;
@@ -36,7 +36,7 @@ public class  PlayerManager {
             ply.aura = playerPacket.getAuraID();
             ply.auraColor = playerPacket.getAuraColor();
 
-            plyPackets.put(integer, ply);
+            plyPackets.put(id, ply);
         });
         return plyPackets;
     }

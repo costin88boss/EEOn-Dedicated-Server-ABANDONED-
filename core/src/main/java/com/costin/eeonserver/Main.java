@@ -41,9 +41,9 @@ public class  Main implements ApplicationListener {
     public void render() {
         // Draw your application here.
         try {
-            for (Map.Entry<Integer, Player> player :
-                    PlayerManager.getInstance().players.entrySet()) {
-                player.getValue().update(player.getKey());
+            for (Player player :
+                    PlayerManager.getInstance().players.values()) {
+                player.update();
             }
         } catch (ConcurrentModificationException ignored) {
 

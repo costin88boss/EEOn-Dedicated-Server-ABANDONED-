@@ -17,6 +17,7 @@ import com.esotericsoftware.minlog.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class  JoinLeaveListener implements Listener {
     @Override
@@ -28,7 +29,7 @@ public class  JoinLeaveListener implements Listener {
     @Override
     public void disconnected(Connection connection) {
         Player player = PlayerManager.getInstance().players.remove(connection.getID());
-        if (player == null) return;
+        if(player == null) return;
         PlayerManager.getInstance().playerNames.remove(player.getUsername());
         WorldManager.getInstance().collWorld.remove(player);
         WorldManager.getInstance().collWorld.remove(player.innerCollision);
@@ -42,8 +43,9 @@ public class  JoinLeaveListener implements Listener {
     @Override
     public void received(Connection connection, Object object) {
         if (object instanceof JoinRequestPacket) {
+            Player ply = PlayerManager.getInstance().players.get(connection.getID());
+            if(ply != null) return;
             JoinRequestPacket oldPacket = (JoinRequestPacket) object;
-            if (PlayerManager.getInstance().players.get(connection.getID()) != null) return;
             if (!Objects.equals(oldPacket.clientVersion, Laws.clientVersion)) {
                 int major, minor, revision;
                 ConnectionDenyPacket kickPacket = new ConnectionDenyPacket();
@@ -96,7 +98,15 @@ public class  JoinLeaveListener implements Listener {
             connection.setTimeout(12000);
             connection.setKeepAliveTCP(5000);
             RequestAcceptedPacket packet = new RequestAcceptedPacket();
-            packet.newUsername = oldPacket.desiredUsername + PlayerManager.getInstance().players.size();
+            //oldPacket.desiredUsername
+            int nameI = 0;
+            while(true) {
+                if (!PlayerManager.getInstance().playerNames.contains("User" + nameI)) {
+                    packet.newUsername = "User" + (nameI); // connection.getID();
+                    System.out.println(nameI);
+                    break;
+                } else nameI++;
+            }
             packet.x = 16;
             packet.y = 480 - 16 - 16 * 5; //640, 480;
             WorldPacket world = new WorldPacket();
@@ -137,7 +147,7 @@ public class  JoinLeaveListener implements Listener {
             joinPacket.aura = oldPacket.desiredAura;
             //joinPacket.god = oldPacket.
 
-            Player player = new Player(joinPacket.x, joinPacket.y, 0, 0, joinPacket.username, joinPacket.smiley, joinPacket.golden);
+            Player player = new Player(joinPacket.x, joinPacket.y, 0, 0, joinPacket.username, joinPacket.smiley, joinPacket.golden, connection);
             player.updatePacket(new PlayerMovePacket(), connection);
             connection.sendTCP(packet);
             WorldManager.getInstance().collWorld.add(player, packet.x + 1, packet.y + 1, 14, 14);

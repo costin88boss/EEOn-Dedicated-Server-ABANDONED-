@@ -19,6 +19,7 @@ public class  Player extends GameObject {
     public Item<GameObject> actionCollision;
     public Item<GameObject> innerCollision;
     protected float x, y, vY, vX;
+    protected Connection connection;
     protected String username;
     private PlayerMovePacket movePacket;
     private boolean sentStop;
@@ -29,7 +30,7 @@ public class  Player extends GameObject {
     private Color auraColor;
     private int smileyID, auraID;
 
-    public Player(float x, float y, float vX, float vY, String username, int smileyID, boolean smileyIsGolden) {
+    public Player(float x, float y, float vX, float vY, String username, int smileyID, boolean smileyIsGolden, Connection connection) {
         super();
         movePacket = new PlayerMovePacket();
         actionCollision = new Item<>(this);
@@ -40,6 +41,7 @@ public class  Player extends GameObject {
         setPosition(x, y);
         setUsername(username);
         auraColor = new Color(1, 1, 1, 1);
+        this.connection = connection;
     }
 
     public void setSmiley(int newSmiley) {
@@ -48,6 +50,10 @@ public class  Player extends GameObject {
 
     public void setAura(int newAura) {
         auraID = newAura;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     public void setPosition(float x, float y) {
@@ -89,9 +95,6 @@ public class  Player extends GameObject {
         }
     }
 
-    public float getCorrectX() {
-        return Math.abs(x - 640);
-    }
     public float getCorrectY() {
         return Math.abs(y - 480);
     }
@@ -120,7 +123,7 @@ public class  Player extends GameObject {
         movePacket = packet;
     }
 
-    private void move(int id) {
+    private void move() {
         try {
             if (movePacket.xAction == 1) diffX = Laws.playerForce / 100;
             if (movePacket.xAction == -1) diffX = -(Laws.playerForce / 100);
@@ -244,7 +247,7 @@ public class  Player extends GameObject {
             if(imx != 0 || (ItemId.isLiquid(0) && !hasGodMode)){
                 moving = true;
             }else if(diffX < 0.1 && diffX > -0.1){
-                float tx = getCorrectX() % 16;
+                float tx = x % 16;
                 if(tx < 2){
                     if(tx < .2){
                         x = (int)x;
@@ -281,20 +284,20 @@ public class  Player extends GameObject {
 
             if (vX != 0 || vY != 0) {
                 sentStop = false;
-                sendShit(id, diffX, diffY, movePacket.spaced);
+                sendShit(diffX, diffY, movePacket.spaced);
             } else if (!sentStop) {
                 // to avoid useless packets
                 sentStop = true;
-                sendShit(id, diffX, diffY, movePacket.spaced);
+                sendShit(diffX, diffY, movePacket.spaced);
             }
         } catch (NullPointerException ignored) {
             // try-catch is for errors due to user disconnect.
         }
     }
 
-    private void sendShit(int id, float vXDiff, float vYDiff, boolean spaced) {
+    private void sendShit(float vXDiff, float vYDiff, boolean spaced) {
         ServerMovePacket newMovePacket = new ServerMovePacket();
-        newMovePacket.id = id;
+        newMovePacket.id = connection.getID();
         newMovePacket.vX = vX;
         newMovePacket.vY = vY;
         newMovePacket.vXDiff = vXDiff;
@@ -305,7 +308,7 @@ public class  Player extends GameObject {
         GameServer.server.sendToAllUDP(newMovePacket);
     }
 
-    public void update(int con) {
-        move(con);
+    public void update() {
+        move();
     }
 }

@@ -1,10 +1,19 @@
 package com.costin.eeonserver.net.webapp;
 
+import com.costin.eeonserver.game.players.Player;
+import com.costin.eeonserver.game.players.PlayerManager;
+import com.costin.eeonserver.net.GameServer;
+import com.costin.eeonserver.net.packets.player.KickPacket;
+
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+
 public class CommandHandler {
     public static String handleCommand(String cmdName) {
         String output;
         System.out.println("Received command: " + cmdName);
-        String[] args = cmdName.split(" ");
+        String[] args = cmdName.trim().split(" ");
         if(args.length == 0) return "Command is null!";
 
         switch (args[0]) {
@@ -25,22 +34,43 @@ public class CommandHandler {
             case "deop": { // give admin
                 if(args.length == 1) return "First argument must be a player's name!";
                 if(args.length > 2) return "Only one argument is allowed!";
-                System.out.println("Revoking Admin from " + args[1]);
                 output = "Revoking Admin from " + args[1];
                 break;
             }
             case "kick": {
                 if(args.length == 1) return "First argument must be a player's name!";
-                if(args.length > 2) return "Only one argument is allowed!";
-                System.out.println("Kicking " + args[1]);
-                output = "Kicking " + args[1];
+                StringBuilder _reason = new StringBuilder();
+                for (int i = 2; i < args.length; i++) {
+                    _reason.append(args[i]).append(" ");
+                }
+                String reason = _reason.toString().trim();
+                if(reason.equals("")) reason = "Kicked by an admin with no reason";
+                boolean kicked = kickUser(args[1], reason);
+                if(kicked) {
+                    System.out.println("Kicked " + args[1]);
+                    output = "Kicked " + args[1];
+                } else {
+                    System.out.println("Could not kick " + args[1]);
+                    output = "Could not kick " + args[1];
+                }
                 break;
             }
             case "ban": { // ip ban
                 if(args.length == 1) return "First argument must be a player's name!";
-                if(args.length > 2) return "Only one argument is allowed!";
-                System.out.println("Banning " + args[1]);
-                output = "Banning " + args[1];
+                StringBuilder _reason = new StringBuilder();
+                for (int i = 2; i < args.length; i++) {
+                    _reason.append(args[i]).append(" ");
+                }
+                String reason = _reason.toString().trim();
+                if(reason.equals("")) reason = "Banned by an admin with no reason";
+                boolean banned = banUser(args[1], reason);
+                if(banned) {
+                    System.out.println("Banned " + args[1]);
+                    output = "Banned " + args[1];
+                } else {
+                    System.out.println("Could not ban " + args[1]);
+                    output = "Could not ban " + args[1];
+                }
                 break;
             }
             case "ping": {
@@ -55,5 +85,29 @@ public class CommandHandler {
         }
 
         return output;
+    }
+
+    public static boolean kickUser(String user, String... reason) {
+        int i = PlayerManager.getInstance().playerNames.indexOf(user);
+        if(i == -1) return false;
+        Player ply = PlayerManager.getInstance().players.values().stream().filter(player -> Objects.equals(player.getUsername(), user)).findFirst().get();
+        KickPacket packet = new KickPacket();
+        packet.reason = "Kicked: " + Arrays.toString(reason);
+        ply.getConnection().sendTCP(packet);
+        ply.getConnection().close(); // in the face
+        return true;
+    }
+
+    public static boolean banUser(String user, String... reason) {
+        int i = PlayerManager.getInstance().playerNames.indexOf(user);
+        if(i == -1) return false;
+        Player ply = PlayerManager.getInstance().players.values().stream().filter(player -> Objects.equals(player.getUsername(), user)).findFirst().get();
+        KickPacket packet = new KickPacket();
+        packet.reason = "Banned: " + Arrays.toString(reason);
+        packet.permBanned = true;
+        // TODO: blacklist file
+        ply.getConnection().sendTCP(packet);
+        ply.getConnection().close();
+        return true;
     }
 }

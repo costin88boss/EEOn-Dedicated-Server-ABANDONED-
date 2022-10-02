@@ -49,6 +49,7 @@ public class  GameServer {
         server.getKryo().register(ServerPlyUpdatePacket.class);
         server.getKryo().register(AutoKickPacket.class);
         server.getKryo().register(PacketEnums.AutoKickReason.class);
+        server.getKryo().register(KickPacket.class);
 
         server.getKryo().register(PlayerPacket.class);
         server.getKryo().register(WorldPacket.class);

@@ -10,19 +10,21 @@ import com.costin.eeonserver.net.packets.player.updates.serverside.ServerPlyUpda
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class  PlayerUpdateListener implements Listener {
     @Override
     public void received(Connection connection, Object object) {
         if (object instanceof PlayerMovePacket) {
-            PlayerMovePacket packet = (PlayerMovePacket) object;
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
-            if (ply == null) return;
+            if(ply == null) return;
+            PlayerMovePacket packet = (PlayerMovePacket) object;
             ply.updatePacket(packet, connection);
         }
         if (object instanceof PlayerUpdatePacket) {
-            PlayerUpdatePacket packet = (PlayerUpdatePacket) object;
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
-            if (ply == null) return;
+            if(ply == null) return;
+            PlayerUpdatePacket packet = (PlayerUpdatePacket) object;
             ply.setGodMode(packet.hasGodMode);
             ServerPlyUpdatePacket newPacket = new ServerPlyUpdatePacket();
             newPacket.newSmiley = -1;
