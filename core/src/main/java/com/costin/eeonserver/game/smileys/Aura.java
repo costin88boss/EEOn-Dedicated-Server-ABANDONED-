@@ -1,18 +1,13 @@
 package com.costin.eeonserver.game.smileys;
 
-public class  Smiley {
+public class  Aura {
     protected String name;
-    protected String description;
     protected int minimapColor;
     // totally unused
     protected String vaultID;
 
     public String getName() {
         return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public int getMinimapColor() {
@@ -23,4 +18,3 @@ public class  Smiley {
         return vaultID;
     }
 }
-
