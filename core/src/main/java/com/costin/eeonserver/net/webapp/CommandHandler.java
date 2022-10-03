@@ -20,8 +20,14 @@ public class CommandHandler {
                 if (args.length <= 2)
                     return "First argument must be a player's name, and Second argument must be the new nickname!";
                 if (args.length > 3) return "Only two arguments are allowed!";
-                System.out.println("Nicknaming " + args[1] + " to " + args[2]);
-                output = "Nicknaming " + args[1] + " to " + args[2];
+                boolean could = nickUser(args[1], args[2]);
+                if(could) {
+                    System.out.println("Nicknaming " + args[1] + " to " + args[2]);
+                    output = "Nicknaming " + args[1] + " to " + args[2];
+                } else {
+                    System.out.println("Could not rename " + args[1]);
+                    output = "Could not rename " + args[1];
+                }
                 break;
             }
             case "op": { // give admin
@@ -87,6 +93,14 @@ public class CommandHandler {
         return output;
     }
 
+    public static boolean nickUser(String user, String newName) {
+        Optional<Player> oPly = PlayerManager.getInstance().players.values().stream().filter(player -> Objects.equals(player.getUsername(), user)).findFirst();
+        if (!oPly.isPresent()) return false;
+        Player ply = oPly.get();
+        String ip = ply.getConnection().getRemoteAddressTCP().getAddress().getHostAddress();
+        return DataManager.getInstance().setNickname(newName, ip);
+    }
+
     public static boolean kickUser(String user, String... reason) {
         Optional<Player> oPly = PlayerManager.getInstance().players.values().stream().filter(player -> Objects.equals(player.getUsername(), user)).findFirst();
         if (!oPly.isPresent()) return false;
@@ -106,6 +120,6 @@ public class CommandHandler {
         packet.reason = "Banned: " + Arrays.toString(reason);
         packet.permBanned = true;
         String ip = ply.getConnection().getRemoteAddressTCP().getAddress().getHostAddress();
-        return DataManager.getInstance().addBlacklist(user, ip, packet);
+        return DataManager.getInstance().addBlacklist(ip, packet);
     }
 }

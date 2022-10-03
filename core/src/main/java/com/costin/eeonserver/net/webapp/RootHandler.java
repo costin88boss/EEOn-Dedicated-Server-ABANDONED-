@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -20,7 +21,16 @@ public class RootHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange he) throws IOException {
-        if (!he.getRemoteAddress().getHostName().equals("0:0:0:0:0:0:0:1")) return;
+        // TODO: change this with a user and pass login
+        // TODO: HUGE SECURITY LEAK HERE
+
+        // (for tomorrow)
+        // TODO: above
+        // TODO: chat
+        // TODO: admin
+        // (for tomorrow)
+
+        //if (!he.getRemoteAddress().getAddress().getHostAddress().equals(InetAddress.getLocalHost().getHostAddress())) return;
         FileHandle handle = Gdx.files.internal("website/" + he.getRequestURI().getPath());
         FileHandle index = handle.child("index.html");
         StringBuilder response;

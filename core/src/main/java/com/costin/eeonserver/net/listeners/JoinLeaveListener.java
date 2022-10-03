@@ -115,12 +115,28 @@ public class JoinLeaveListener implements Listener {
             RequestAcceptedPacket packet = new RequestAcceptedPacket();
             //oldPacket.desiredUsername
             int nameI = 0;
-            while (true) {
-                if (!PlayerManager.getInstance().playerNames.contains("User" + nameI)) {
-                    packet.newUsername = "User" + (nameI);
+            String name = "User";
+            for (DataManager.AccountObject account : DataManager.getInstance().getAccounts()) {
+                if(Objects.equals(account.getIp(), connection.getRemoteAddressTCP().getAddress().getHostAddress())) {
+                    name = account.getName();
                     break;
-                } else nameI++;
+                }
             }
+            if(PlayerManager.getInstance().playerNames.contains(name)) {
+                String _name = name;
+                while (true) {
+                    if (!PlayerManager.getInstance().playerNames.contains(_name)) {
+                        if(nameI != 0)
+                        packet.newUsername = name + (nameI+1);
+                        else packet.newUsername = name;
+                        break;
+                    } else {
+                        nameI++;
+                        _name = name;
+                        _name += String.valueOf(nameI);
+                    }
+                }
+            } else packet.newUsername = name;
             packet.x = 16;
             packet.y = 480 - 16 - 16 * 5; //640, 480;
             WorldPacket world = new WorldPacket();

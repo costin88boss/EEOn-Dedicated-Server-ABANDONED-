@@ -13,6 +13,7 @@ import com.costin.eeonserver.game.world.items.BlockManager;
 import com.costin.eeonserver.net.listeners.JoinLeaveListener;
 import com.costin.eeonserver.net.listeners.PlayerUpdateListener;
 import com.costin.eeonserver.net.packets.info.BlockGroupPacket;
+import com.costin.eeonserver.net.packets.info.PlayerChangePacket;
 import com.costin.eeonserver.net.packets.info.WorldPacket;
 import com.costin.eeonserver.net.packets.player.*;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePacket;
@@ -51,6 +52,7 @@ public class GameServer {
         server.getKryo().register(AutoKickPacket.class);
         server.getKryo().register(PacketEnums.AutoKickReason.class);
         server.getKryo().register(KickPacket.class);
+        server.getKryo().register(PlayerChangePacket.class);
 
         server.getKryo().register(PlayerPacket.class);
         server.getKryo().register(WorldPacket.class);
@@ -58,6 +60,7 @@ public class GameServer {
 
         server.getKryo().register(HashMap.class);
         server.getKryo().register(ArrayList.class);
+        server.getKryo().register(String[].class);
 
         server.getKryo().register(EEWorld.class);
         server.getKryo().register(Color.class);
