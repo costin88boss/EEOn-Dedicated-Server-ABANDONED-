@@ -14,7 +14,7 @@ import com.dongbat.jbump.Rect;
 import com.dongbat.jbump.Response;
 import com.esotericsoftware.kryonet.Connection;
 
-public class  Player extends GameObject {
+public class Player extends GameObject {
     private static final int oX = 5, oY = 5;
     public Item<GameObject> actionCollision;
     public Item<GameObject> innerCollision;
@@ -190,7 +190,7 @@ public class  Player extends GameObject {
                     if (coll.normal.x != 0) {
                         vX = coll.normal.x / 1000f;
                     }
-                    if(coll.overlaps) {
+                    if (coll.overlaps) {
                         stuckInBlock = true;
                         break;
                     }
@@ -201,7 +201,7 @@ public class  Player extends GameObject {
                 y += vY;
                 WorldManager.getInstance().collWorld.update(this, x, y);
             }
-            if(stuckInBlock) {
+            if (stuckInBlock) {
                 WorldManager.getInstance().collWorld.update(this, x, y);
                 vX = 0;
                 vY = 0;
@@ -244,38 +244,38 @@ public class  Player extends GameObject {
 
             boolean moving = false;
 
-            if(imx != 0 || (ItemId.isLiquid(0) && !hasGodMode)){
+            if (imx != 0 || (ItemId.isLiquid(0) && !hasGodMode)) {
                 moving = true;
-            }else if(diffX < 0.1 && diffX > -0.1){
+            } else if (diffX < 0.1 && diffX > -0.1) {
                 float tx = x % 16;
-                if(tx < 2){
-                    if(tx < .2){
-                        x = (int)x;
-                    } else x -= tx/15;
-                }else if(tx > 14){
-                    if(tx > 15.8){
-                        x = (int)x;
-                        x ++;
-                    }else x+= (tx-14)/15;
+                if (tx < 2) {
+                    if (tx < .2) {
+                        x = (int) x;
+                    } else x -= tx / 15;
+                } else if (tx > 14) {
+                    if (tx > 15.8) {
+                        x = (int) x;
+                        x++;
+                    } else x += (tx - 14) / 15;
                 }
 
             }
 
-            if(imy != 0 || (ItemId.isLiquid(0) && !hasGodMode)){
+            if (imy != 0 || (ItemId.isLiquid(0) && !hasGodMode)) {
                 moving = true;
-            }else if(diffY < 0.1 && diffY > -0.1 ){
+            } else if (diffY < 0.1 && diffY > -0.1) {
                 float ty = getCorrectY() % 16;
 
-                if(ty < 2){
-                    if(ty < .2){
-                        y = (int)y;
-                    }else y -= ty/15;
-                }else if(ty > 14){
+                if (ty < 2) {
+                    if (ty < .2) {
+                        y = (int) y;
+                    } else y -= ty / 15;
+                } else if (ty > 14) {
 
-                    if(ty > 15.8){
-                        y = (int)y;
-                        y ++;
-                    }else y+= (ty-14)/15;
+                    if (ty > 15.8) {
+                        y = (int) y;
+                        y++;
+                    } else y += (ty - 14) / 15;
                 }
             }
 

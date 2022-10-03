@@ -1,6 +1,6 @@
 package com.costin.eeonserver.game.smileys;
 
-public class  Aura {
+public class Aura {
     protected String name;
     protected int minimapColor;
     // totally unused

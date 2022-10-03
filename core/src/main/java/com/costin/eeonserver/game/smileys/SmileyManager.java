@@ -7,7 +7,7 @@ import com.costin.eeonserver.game.world.items.ItemId;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class  SmileyManager {
+public class SmileyManager {
 
     private static SmileyManager singleton;
 

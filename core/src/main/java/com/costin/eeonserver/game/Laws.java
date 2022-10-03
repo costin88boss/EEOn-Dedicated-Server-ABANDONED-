@@ -1,6 +1,6 @@
 package com.costin.eeonserver.game;
 
-public class  Laws {
+public class Laws {
 
     public static final String clientVersion = "0.0.1";
     public static final int tps = 60;

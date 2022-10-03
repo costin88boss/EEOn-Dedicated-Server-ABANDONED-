@@ -10,6 +10,7 @@ import com.costin.eeonserver.net.packets.info.BlockGroupPacket;
 import com.costin.eeonserver.net.packets.info.WorldPacket;
 import com.costin.eeonserver.net.packets.player.*;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePacket;
+import com.costin.eeonserver.net.webapp.DataManager;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
@@ -17,11 +18,25 @@ import com.esotericsoftware.minlog.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class  JoinLeaveListener implements Listener {
+public class JoinLeaveListener implements Listener {
     @Override
     public void connected(Connection connection) {
+        try {
+            DataManager.getInstance().getBlacklist().forEach(blacklistObject -> {
+                if(Objects.equals(blacklistObject.getIp(), connection.getRemoteAddressTCP().getAddress().getHostAddress()) || Objects.equals(blacklistObject.getIp(), connection.getRemoteAddressUDP().getAddress().getHostAddress())) {
+                    KickPacket kickPacket = new KickPacket();
+                    kickPacket.reason = blacklistObject.getReason();
+                    kickPacket.permBanned = true;
+                    connection.sendTCP(kickPacket);
+                    connection.close(); // nope goodbye
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            connection.close();
+            return;
+        }
         connection.setTimeout(5000);
         connection.setKeepAliveTCP(0);
     }
@@ -29,7 +44,7 @@ public class  JoinLeaveListener implements Listener {
     @Override
     public void disconnected(Connection connection) {
         Player player = PlayerManager.getInstance().players.remove(connection.getID());
-        if(player == null) return;
+        if (player == null) return;
         PlayerManager.getInstance().playerNames.remove(player.getUsername());
         WorldManager.getInstance().collWorld.remove(player);
         WorldManager.getInstance().collWorld.remove(player.innerCollision);
@@ -44,7 +59,7 @@ public class  JoinLeaveListener implements Listener {
     public void received(Connection connection, Object object) {
         if (object instanceof JoinRequestPacket) {
             Player ply = PlayerManager.getInstance().players.get(connection.getID());
-            if(ply != null) return;
+            if (ply != null) return;
             JoinRequestPacket oldPacket = (JoinRequestPacket) object;
             if (!Objects.equals(oldPacket.clientVersion, Laws.clientVersion)) {
                 int major, minor, revision;
@@ -100,10 +115,9 @@ public class  JoinLeaveListener implements Listener {
             RequestAcceptedPacket packet = new RequestAcceptedPacket();
             //oldPacket.desiredUsername
             int nameI = 0;
-            while(true) {
+            while (true) {
                 if (!PlayerManager.getInstance().playerNames.contains("User" + nameI)) {
-                    packet.newUsername = "User" + (nameI); // connection.getID();
-                    System.out.println(nameI);
+                    packet.newUsername = "User" + (nameI);
                     break;
                 } else nameI++;
             }

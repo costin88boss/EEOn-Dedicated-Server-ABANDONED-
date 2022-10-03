@@ -7,7 +7,7 @@ import com.costin.eeonserver.Main;
 /**
  * Launches the headless application. Can be converted into a utilities project or a server application.
  */
-public class  HeadlessLauncher {
+public class HeadlessLauncher {
     public static void main(String[] args) {
         createApplication();
     }

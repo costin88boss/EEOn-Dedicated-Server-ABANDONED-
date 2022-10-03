@@ -2,7 +2,7 @@ package com.costin.eeonserver.game;
 
 import com.badlogic.gdx.ApplicationListener;
 
-public class  EventHandler implements ApplicationListener {
+public class EventHandler implements ApplicationListener {
     @Override
     public void create() {
 

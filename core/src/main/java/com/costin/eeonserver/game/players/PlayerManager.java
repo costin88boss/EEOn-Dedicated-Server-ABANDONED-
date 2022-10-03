@@ -5,7 +5,7 @@ import com.costin.eeonserver.net.packets.player.PlayerPacket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class  PlayerManager {
+public class PlayerManager {
 
     private static PlayerManager singleton;
     public final HashMap<Integer, Player> players;
@@ -23,7 +23,7 @@ public class  PlayerManager {
 
     public HashMap<Integer, PlayerPacket> getPlayersAsPackets() {
         HashMap<Integer, PlayerPacket> plyPackets = new HashMap<>();
-        players.forEach((id , playerPacket) -> {
+        players.forEach((id, playerPacket) -> {
             PlayerPacket ply = new PlayerPacket();
             ply.x = playerPacket.x;
             ply.y = playerPacket.y;

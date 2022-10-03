@@ -3,7 +3,7 @@ package com.costin.eeonserver.game.world;
 import com.costin.eeonserver.game.GameObject;
 import com.dongbat.jbump.World;
 
-public class  WorldManager {
+public class WorldManager {
     private static WorldManager singleton;
     public EEWorld EEWorld;
     public World<GameObject> collWorld;

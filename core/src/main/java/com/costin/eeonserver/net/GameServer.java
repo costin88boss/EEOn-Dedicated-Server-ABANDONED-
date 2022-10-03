@@ -19,6 +19,7 @@ import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePac
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerUpdatePacket;
 import com.costin.eeonserver.net.packets.player.updates.serverside.ServerMovePacket;
 import com.costin.eeonserver.net.packets.player.updates.serverside.ServerPlyUpdatePacket;
+import com.costin.eeonserver.net.webapp.DataManager;
 import com.costin.eeonserver.net.webapp.RootHandler;
 import com.dongbat.jbump.Item;
 import com.esotericsoftware.kryonet.Server;
@@ -31,7 +32,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class  GameServer {
+public class GameServer {
     static final int port = 20600;
     public static Server server = null;
     public static HttpServer website = null;
@@ -83,6 +84,8 @@ public class  GameServer {
         new SmileyManager();
         new PlayerManager();
         new CollFilter();
+        new DataManager();
+        if (DataManager.getInstance().failed) return;
 
         WorldManager.getInstance().EEWorld = EELevel.read("EEOn");
 

@@ -1,6 +1,6 @@
 package com.costin.eeonserver.game.smileys;
 
-public class  Smiley {
+public class Smiley {
     protected String name;
     protected String description;
     protected int minimapColor;

@@ -20,7 +20,7 @@ public class BlockManager {
     private final Texture effectBlocksBMD = null;
     private final Texture teamBlocksBMD = null;
     private final Texture completeBlocksBMD = null;
-    private final Texture blockNumbersBMD  = null;
+    private final Texture blockNumbersBMD = null;
     private final Texture blocksFireworksBMD = null;
     private final Texture blocksGoldenEasterEggBMD = null;
 
@@ -41,12 +41,12 @@ public class BlockManager {
         singleton = this;
     }
 
-    public int getBrickCount() {
-        return brickCount;
-    }
-
     public static BlockManager getInstance() {
         return singleton;
+    }
+
+    public int getBrickCount() {
+        return brickCount;
     }
 
     private void generateBlocks() {

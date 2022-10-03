@@ -7,9 +7,10 @@
     textarea {
         resize: none;
     }
+
 </style>
 <body>
-<header style="font-size:36px;font-weight:bold" id="world name">N/A</header>
+<header id="world name" style="font-size:36px;font-weight:bold">N/A</header>
 <p>by <span id="world owner">N/A</span></p>
 
 <p><span id="pcount">0</span> players currently in</p>
@@ -24,7 +25,7 @@
 <button onclick="cmdprompt_deop()">Deop</button>
 <p><br></p>
 <p>Console. Run commands here</p>
-<textarea id="cmdarea" rows="1" cols="50"></textarea>
+<textarea cols="50" id="cmdarea" rows="1"></textarea>
 <button onclick="runcmd()">Run</button>
 
 
@@ -79,5 +80,6 @@
         sendCommand(command);
     };
     
+
 
 </script>

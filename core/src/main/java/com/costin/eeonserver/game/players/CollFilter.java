@@ -4,7 +4,7 @@ import com.costin.eeonserver.game.world.BlockGroup;
 import com.dongbat.jbump.CollisionFilter;
 import com.dongbat.jbump.Response;
 
-public class  CollFilter {
+public class CollFilter {
     private static CollFilter instance;
     public CollisionFilter testFilter = ((item, other) -> {
         if (other.userData instanceof BlockGroup.BaseBlock) {
