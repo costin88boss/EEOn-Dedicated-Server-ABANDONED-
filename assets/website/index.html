@@ -1,36 +1,98 @@
 <style>
     body {
-        font-family: 'Titillium Web';
+        font-family: roboto;
         background-color: black;
         color: white;
+        line-break: auto;
+        line-height: 70%;
+        margin-top: 30px;
     }
     textarea {
         resize: none;
     }
-
+    textarea {
+    border-radius: 0px;
+    font-size: 16px;
+    background-color: #111111;
+    color: white;
+    outline-color: white;
+    outline-style: solid;
+    outline-width: 1px;
+    font-family: 'Courier';
+    display: inline-block;
+    }
+    #consolelog{
+        outline-color: white;
+        outline-style: solid;
+        outline-width: 1px;
+        width: 90%;
+        height: 20%;
+        background-color: black;
+        font-family: roboto;
+        font-weight: lighter;
+    }
+    button{
+    border: auto;
+    outline-color: white;
+    outline-width: 1px;
+    outline-style: solid;
+    border-radius: 0px;
+    background-color: #111111;
+    font-family: sans-serif;
+    display: inline-block;
+    color: white;
+    }
+    .aligntoline {
+        position:relative;
+        bottom:4px;
+        left:18px;
+        font-size: 24px;
+        font-family: Roboto;
+        font-weight: lighter
+    }
+    #msgtext{
+        background-color: white;
+        color: black;
+    }
 </style>
 <body>
-<header id="world name" style="font-size:36px;font-weight:bold">N/A</header>
+<header id="world name" style="font-size:36px;font-weight:bold">N/A</header><br>
 <p>by <span id="world owner">N/A</span></p>
 
 <p><span id="pcount">0</span> players currently in</p>
 <p>Players: <span id="current players"></span></p>
-<br>0
+<br>
 <p>Quick actions</p>
 <button onclick="cmdprompt_kick()">Kick</button>
 <button onclick="cmdprompt_ban()">Ban</button>
 <button onclick="cmdprompt_ren_w()">Rename world (N/A)</button>
 <button onclick="cmdprompt_ren_u()">Rename user</button>
 <button onclick="cmdprompt_op()">Op</button>
-<button onclick="cmdprompt_deop()">Deop</button>
+<button onclick="cmdprompt_deop()">Deop</button><br><br>
+<button onclick="sendCommand('ping')">Ping</button>
+<button onclick='clearlog()'>Clear log</button>
+
+<p><br></p>
+<textarea cols="50" id="msgtext" rows="1"></textarea>
+<button onclick="cmd_say()" class="aligntoline">Say</button>
+<button onclick="console_send()" class="aligntoline">Send to log</button>
+
 <p><br></p>
 <p>Console. Run commands here</p>
+
+
 <textarea cols="50" id="cmdarea" rows="1"></textarea>
-<button onclick="runcmd()">Run</button>
+<button onclick="runcmd()" class="aligntoline">Run</button>
+
+
+<br><br>
+<p>Log</p>
+<textarea id="consolelog" disabled="true"></textarea>
 
 
 </body>
 <script>
+    var logtxt = "";
     var xmlHttp = new XMLHttpRequest();
 
     function sendCommand(cmdName) { // function that runs server commands
@@ -39,6 +101,13 @@
         xmlHttp.send(cmdName);
 
         console.log(xmlHttp.responseText);
+        logtxt = logtxt + xmlHttp.responseText + "\n";
+        document.getElementById("consolelog").value = logtxt;
+    }
+
+    function clearlog() {
+        logtxt = '';
+        document.getElementById('consolelog').value = logtxt;
     }
 
     setInterval(function() {
@@ -53,27 +122,38 @@
 
     function cmdprompt_kick() {
         let username = prompt("Enter the username of the player you want to kick.");
-        if (username != null) {sendCommand(`kick ${username}`)}
+        if (username.length != 0) {sendCommand(`kick ${username}`)}
     };
     function cmdprompt_ban() {
         let username = prompt("Enter the username of the player you want to ban.");
-        if (username != null) {sendCommand(`ban ${username}`)}
+        if (username.length != 0) {sendCommand(`ban ${username}`)}
     };
     function cmdprompt_ren_w() {
         alert("This command is not available yet!")
     }; // Renaming worlds coming soon.
     function cmdprompt_ren_u() {
         let username = prompt("Enter username of the player you want to rename.");
-        let newusername = prompt(`Rename player ${username} to...`);
-        if (username != null && newusername != null) {sendCommand(`nick ${username} ${newusername}`)}
+        if (username.length != 0) {
+        let newusername = prompt(`Rename player ${username} to...`)
+        };
+        if (username.length != 0 && newusername.length != 0) {sendCommand(`nick ${username} ${newusername}`)}
     };
     function cmdprompt_op() {
         let username = prompt("Enter username of the player you want to give operator (admin) privileges to.");
-        if (username != null) {sendCommand(`op ${username}`)}
+        if (username.length != 0) {sendCommand(`op ${username}`)}
     };
     function cmdprompt_deop() {
         let username = prompt("Enter username of the player to take away operator privileges from.");
-        if (username != null) {sendCommand(`deop ${username}`)}
+        if (username.length != 0) {sendCommand(`deop ${username}`)}
+    };
+    function console_send() {
+        let message = document.getElementById("msgtext").value
+        if (message.length != 0) {logtxt = logtxt + message + "\n";
+        document.getElementById("consolelog").value = logtxt}
+    };
+    function cmd_say() {
+        let message = document.getElementById("msgtext").value
+        if (message.length != 0) {sendCommand(`say ${message}`)};
     };
     function runcmd() {
         let command = document.getElementById("cmdarea").value;
