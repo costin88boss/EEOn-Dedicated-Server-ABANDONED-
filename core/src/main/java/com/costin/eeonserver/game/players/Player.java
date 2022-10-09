@@ -17,7 +17,6 @@ import com.esotericsoftware.kryonet.Connection;
 public class Player extends GameObject {
     private static final int oX = 5, oY = 5;
     public Item<GameObject> actionCollision;
-    public Item<GameObject> innerCollision;
     protected float x, y, vY, vX;
     protected Connection connection;
     protected String username;
@@ -34,7 +33,6 @@ public class Player extends GameObject {
         super();
         movePacket = new PlayerMovePacket();
         actionCollision = new Item<>(this);
-        innerCollision = new Item<>(this);
         //setAura
         setSmiley(smileyID);
         setVelocity(vX, vY);
@@ -177,7 +175,7 @@ public class Player extends GameObject {
 
             boolean stuckInBlock = false;
             if (!hasGodMode) {
-                Response.Result res = WorldManager.getInstance().collWorld.move(this, x + vX + 1, y + vY + 1, CollFilter.getInstance().blockFilter);
+                Response.Result res = WorldManager.getInstance().collWorld.move(this, x + vX, y + vY, CollFilter.getInstance().blockFilter);
                 boolean canGround = false;
                 for (int i = 0; i < res.projectedCollisions.size(); i++) {
                     Collision coll = res.projectedCollisions.get(i);
@@ -209,8 +207,8 @@ public class Player extends GameObject {
             Rect rect = WorldManager.getInstance().collWorld.getRect(this);
             float _x, _y;
             if (!hasGodMode && !stuckInBlock) {
-                _x = rect.x - 1;
-                _y = rect.y - 1;
+                _x = rect.x;
+                _y = rect.y;
             } else {
                 _x = x;
                 _y = y;
