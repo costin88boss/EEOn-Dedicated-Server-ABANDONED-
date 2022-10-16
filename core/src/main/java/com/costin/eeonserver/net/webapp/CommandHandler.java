@@ -1,5 +1,6 @@
 package com.costin.eeonserver.net.webapp;
 
+import com.badlogic.gdx.utils.StringBuilder;
 import com.costin.eeonserver.game.players.Player;
 import com.costin.eeonserver.game.players.PlayerManager;
 import com.costin.eeonserver.net.packets.player.KickPacket;

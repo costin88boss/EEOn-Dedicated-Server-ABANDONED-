@@ -65,27 +65,25 @@
 <p>Quick actions</p>
 <button onclick="cmdprompt_kick()">Kick</button>
 <button onclick="cmdprompt_ban()">Ban</button>
+<button onclick="cmdprompt_unban()">Unban</button><br><br>
 <button onclick="cmdprompt_ren_w()">Rename world (N/A)</button>
-<button onclick="cmdprompt_ren_u()">Rename user</button>
+<button onclick="cmdprompt_ren_u()">Rename user</button><br><br>
 <button onclick="cmdprompt_op()">Op</button>
 <button onclick="cmdprompt_deop()">Deop</button><br><br>
 <button onclick="sendCommand('ping')">Ping</button>
-<button onclick='clearlog()'>Clear log</button>
+<button onclick='clearlog()'>Clear log</button><br><br>
 
-<p><br></p>
 <textarea cols="50" id="msgtext" rows="1"></textarea>
 <button onclick="cmd_say()" class="aligntoline">Say</button>
 <button onclick="console_send()" class="aligntoline">Send to log</button>
 
-<p><br></p>
+<br><br>
 <p>Console. Run commands here</p>
-
-
 <textarea cols="50" id="cmdarea" rows="1"></textarea>
 <button onclick="runcmd()" class="aligntoline">Run</button>
 
 
-<br><br>
+<br>
 <p>Log</p>
 <textarea id="consolelog" disabled="true"></textarea>
 
@@ -145,6 +143,10 @@
     function cmdprompt_deop() {
         let username = prompt("Enter username of the player to take away operator privileges from.");
         if (username.length != 0) {sendCommand(`deop ${username}`)}
+    };
+    function cmdprompt_unban() {
+        let username = prompt("Enter username of the player you want to unban.");
+        if (username.length != 0) {sendCommand(`unban ${username}`)}
     };
     function console_send() {
         let message = document.getElementById("msgtext").value
