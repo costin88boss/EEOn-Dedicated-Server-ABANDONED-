@@ -47,7 +47,6 @@ public class JoinLeaveListener implements Listener {
         if (player == null) return;
         PlayerManager.getInstance().playerNames.remove(player.getUsername());
         WorldManager.getInstance().collWorld.remove(player);
-        WorldManager.getInstance().collWorld.remove(player.innerCollision);
         WorldManager.getInstance().collWorld.remove(player.actionCollision);
         Log.info("eeon", player.getUsername() + " has left!");
         PlayerLeftPacket packet = new PlayerLeftPacket();
@@ -180,8 +179,7 @@ public class JoinLeaveListener implements Listener {
             Player player = new Player(joinPacket.x, joinPacket.y, 0, 0, joinPacket.username, joinPacket.smiley, joinPacket.golden, connection);
             player.updatePacket(new PlayerMovePacket(), connection);
             connection.sendTCP(packet);
-            WorldManager.getInstance().collWorld.add(player, packet.x + 1, packet.y + 1, 14, 14);
-            WorldManager.getInstance().collWorld.add(player.innerCollision, packet.x, packet.y + 1, 16, 15);
+            WorldManager.getInstance().collWorld.add(player, packet.x, packet.y, 16, 16);
             WorldManager.getInstance().collWorld.add(player.actionCollision, packet.x - 6, packet.y - 6, 12, 12);
             PlayerManager.getInstance().players.put(connection.getID(), player);
             PlayerManager.getInstance().playerNames.add(player.getUsername());

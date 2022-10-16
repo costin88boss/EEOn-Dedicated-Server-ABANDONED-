@@ -1,9 +1,12 @@
 package com.costin.eeonserver.game.world;
 
 import com.badlogic.gdx.graphics.Color;
+import com.costin.eeonserver.game.GameObject;
+import com.dongbat.jbump.Item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EEWorld {
     public final List<BlockGroup> blocks;
@@ -55,6 +58,88 @@ public class EEWorld {
         blocks = new ArrayList<>();
     }
 
+
+    public BlockGroup getGroupAt(int x, int y, int layer) {
+        Optional<BlockGroup> group = blocks.stream().filter(blockGroup -> {
+            for (int i = 0; i < blockGroup.xPositions.size(); i++) {
+                if (blockGroup.xPositions.get(i) == x
+                        && blockGroup.yPositions.get(i) == y
+                        && blockGroup.layer == layer) {
+                    return true;
+                }
+            }
+            return false;
+        }).findFirst();
+        return group.orElse(null);
+    }
+
+    public BlockGroup getGroupWith(int id, int layer) {
+        Optional<BlockGroup> group = blocks.stream().filter(blockGroup -> {
+            for (int i = 0; i < blockGroup.xPositions.size(); i++) {
+                if (blockGroup.blockId == id
+                        && blockGroup.layer == layer) {
+                    return true;
+                }
+            }
+            return false;
+        }).findFirst();
+        return group.orElse(null);
+    }
+
+    public BlockGroup.BaseBlock getBlockAt(int x, int y, int layer) {
+        BlockGroup.BaseBlock block = new BlockGroup.BaseBlock(x, y, 0, layer);
+        BlockGroup group = getGroupAt(x, y, layer);
+        if (group != null) {
+            block.id = group.blockId;
+            block.layer = group.layer;
+        }
+        return block;
+    }
+
+    private boolean checkAndAddBlock(int id, int layer, int x, int y) {
+        if (id == 0) return false;
+        BlockGroup group;
+        group = getGroupWith(id, layer);
+        if (group == null) {
+            group = new BlockGroup(id, layer, new ArrayList<>(), new ArrayList<>());
+            for (int i = 0; i < group.xPositions.size(); i++) {
+                WorldManager.getInstance().collWorld.add(group.perBlockItems.get(i), group.xPositions.get(i) * 16, group.yPositions.get(i) * 16, 16, 16);
+            }
+            blocks.add(group);
+        } else {
+            if (getGroupAt(x, y, layer) == group) {
+                return false;
+            }
+            group.xPositions.add(x);
+            group.yPositions.add(y);
+            Item<GameObject> item = new Item<>(new BlockGroup.BaseBlock(x, y, id, layer));
+            group.perBlockItems.add(item);
+            WorldManager.getInstance().collWorld.add(item, x * 16, -(y - 480 / 16f) * 16, 16, 16);
+        } //640, 480
+        return true;
+    }
+
+    public boolean setBlock(BlockGroup.BaseBlock block) {
+        if (block.x < 0 || block.y < 0 || block.layer < 0 || block.id < 0
+                || block.x > worldWidth || block.y > worldHeight) return false;
+        BlockGroup group = getGroupAt(block.x, block.y, block.layer);
+        if (group != null && group.blockId != block.id) {
+            for (int i = 0; i < group.xPositions.size(); i++) {
+                if (group.xPositions.get(i) == block.x
+                        && group.yPositions.get(i) == block.y) {
+                    group.xPositions.remove(i);
+                    group.yPositions.remove(i);
+                    Item<GameObject> item = group.perBlockItems.remove(i);
+                    WorldManager.getInstance().collWorld.remove(item);
+                    // NOTE: i IS NOT id!
+                    break;
+                }
+            }
+        }
+        return checkAndAddBlock(block.id, block.layer, block.x, block.y);
+    }
+
+    // WARNING: dangerous
     public void addBlockGroup(BlockGroup block) {
         if (blocks.stream().noneMatch(lBlock -> lBlock.blockId == block.blockId && lBlock.layer == block.layer)) {
             blocks.add(block);
@@ -66,5 +151,9 @@ public class EEWorld {
                 ", Gravity Mp " + gravityMultiplier + ", Bgcolor " + bgColor + ", Description '" + description +
                 "', Is Campaign? " + isCampaign + ", CrewID '" + crewId + "', Crew Name '" + crewName +
                 "', CrewStatus " + crewStatus + ", Is Minimap Enabled? " + minimapEnabled + ", ownerId '" + ownerId + "'");
+    }
+
+    protected float getSize() {
+        return 1;
     }
 }
