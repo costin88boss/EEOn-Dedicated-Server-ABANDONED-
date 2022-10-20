@@ -25,11 +25,11 @@ public class PlayerManager {
         HashMap<Integer, PlayerPacket> plyPackets = new HashMap<>();
         players.forEach((id, playerPacket) -> {
             PlayerPacket ply = new PlayerPacket();
-            ply.x = playerPacket.x;
-            ply.y = playerPacket.y;
-            ply.vX = playerPacket.vX;
-            ply.vY = playerPacket.vY;
-            ply.username = playerPacket.username;
+            ply.x = playerPacket.getX();
+            ply.y = playerPacket.getY();
+            ply.vX = playerPacket.getvX();
+            ply.vY = playerPacket.getvY();
+            ply.username = playerPacket.getUsername();
             ply.god = playerPacket.isHasGodMode();
             ply.golden = playerPacket.isGolden();
             ply.smiley = playerPacket.getSmileyID();

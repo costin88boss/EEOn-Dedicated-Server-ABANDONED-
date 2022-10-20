@@ -3,28 +3,34 @@ package com.costin.eeonserver.game.players;
 import com.badlogic.gdx.graphics.Color;
 import com.costin.eeonserver.game.GameObject;
 import com.costin.eeonserver.game.Laws;
+import com.costin.eeonserver.game.world.BlockGroup;
 import com.costin.eeonserver.game.world.WorldManager;
 import com.costin.eeonserver.game.world.items.ItemId;
 import com.costin.eeonserver.net.GameServer;
 import com.costin.eeonserver.net.packets.player.updates.clientside.PlayerMovePacket;
 import com.costin.eeonserver.net.packets.player.updates.serverside.ServerMovePacket;
-import com.dongbat.jbump.Collision;
-import com.dongbat.jbump.Item;
-import com.dongbat.jbump.Rect;
-import com.dongbat.jbump.Response;
+import com.dongbat.jbump.*;
 import com.esotericsoftware.kryonet.Connection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player extends GameObject {
-    private static final int oX = 5, oY = 5;
     public Item<GameObject> actionCollision;
-    protected float x, y, vY, vX;
-    protected Connection connection;
-    protected String username;
+    private float x, y, vY, vX;
+    private final Connection connection;
+    private String username;
     private PlayerMovePacket movePacket;
     private boolean sentStop;
     private float diffX, diffY;
-    private boolean isGrounded;
-    private boolean hitCeiling;
+    private boolean stuckInBlock;
+    // collBottom = isGrounded
+    private boolean collBottom, collLeft, collRight, collTop;
+    private Rect rect;
+    private boolean downLeftAir, downRightAir, upLeftAir, upRightAir;
+    private boolean leftDownAir, leftUpAir, rightDownAir, rightUpAir;
+    // NOTE: downLeft = under player's leftest edge
+    // NOTE: leftDown = before player's leftest edge
     private boolean hasGodMode, isGolden;
     private Color auraColor;
     private int smileyID, auraID;
@@ -40,6 +46,23 @@ public class Player extends GameObject {
         setUsername(username);
         auraColor = new Color(1, 1, 1, 1);
         this.connection = connection;
+        rect = new Rect(x, y, 16, 16);
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getvY() {
+        return vY;
+    }
+
+    public float getvX() {
+        return vX;
     }
 
     public void setSmiley(int newSmiley) {
@@ -65,11 +88,10 @@ public class Player extends GameObject {
     }
 
     public void setGodMode(boolean godMode) {
-        if (isGrounded && !hasGodMode) {
+        if (collBottom && !hasGodMode && !stuckInBlock) {
             vY += Laws.gravity / 5;
-            y += 1;
         }
-        isGrounded = false;
+        collBottom = false;
         hasGodMode = godMode;
     }
 
@@ -94,7 +116,8 @@ public class Player extends GameObject {
     }
 
     public float getCorrectY() {
-        return Math.abs(y - 480);
+        int test = 0;
+        return Math.round(y);
     }
 
     public int getAuraID() {
@@ -131,17 +154,17 @@ public class Player extends GameObject {
             }
 
             if (!hasGodMode) {
-                if (isGrounded || hitCeiling) {
-                    hitCeiling = false;
+                if (collBottom || collTop) {
+                    //collTop = false;
                     diffY = 0;
                     vY = 0;
                 }
 
                 diffY -= Laws.gravity / 5;
 
-                if (movePacket.spaced && isGrounded) {
+                if (movePacket.spaced && collBottom) {
                     diffY = Laws.jumpHeight / 4;
-                    isGrounded = false;
+                    collBottom = false;
                 }
             }
 
@@ -173,27 +196,166 @@ public class Player extends GameObject {
                 vY = 0;
             }
 
-            boolean stuckInBlock = false;
+            if(!hasGodMode && !stuckInBlock) {
+                ArrayList<Item> downLeft = new ArrayList<>();
+                ArrayList<Item> downRight = new ArrayList<>();
+                ArrayList<Item> upLeft = new ArrayList<>();
+                ArrayList<Item> upRight = new ArrayList<>();
+                ArrayList<Item> leftUp = new ArrayList<>();
+                ArrayList<Item> leftDown  = new ArrayList<>();
+                ArrayList<Item> rightUp = new ArrayList<>();
+                ArrayList<Item> rightDown  = new ArrayList<>();
+
+                WorldManager.getInstance().collWorld.queryPoint(rect.x + 0.0001f,      rect.y - 1 + 0.0001f, CollFilter.getInstance().blockFilter, downLeft);
+                WorldManager.getInstance().collWorld.queryPoint(rect.x + 16 - 0.0001f, rect.y - 1 + 0.0001f, CollFilter.getInstance().blockFilter, downRight);
+                WorldManager.getInstance().collWorld.queryPoint(rect.x + 0.0001f,      rect.y + 17 - 0.0001f, CollFilter.getInstance().blockFilter, upLeft);
+                WorldManager.getInstance().collWorld.queryPoint(rect.x + 16 - 0.0001f, rect.y + 17 - 0.0001f, CollFilter.getInstance().blockFilter, upRight);
+                //Sides
+                WorldManager.getInstance().collWorld.queryPoint(rect.x - 1 + 0.0001f,  rect.y + 0.0001f, CollFilter.getInstance().blockFilter, leftDown);
+                WorldManager.getInstance().collWorld.queryPoint(rect.x - 1 + 0.0001f,  rect.y + 16 - 0.0001f, CollFilter.getInstance().blockFilter, leftUp);
+                WorldManager.getInstance().collWorld.queryPoint(rect.x + 17 - 0.0001f, rect.y + 0.0001f, CollFilter.getInstance().blockFilter, rightDown);
+                WorldManager.getInstance().collWorld.queryPoint(rect.x + 17 - 0.0001f, rect.y + 16 - 0.0001f, CollFilter.getInstance().blockFilter, rightUp);
+
+                if(downLeft.isEmpty()) downLeftAir = true;
+                if(downRight.isEmpty()) downRightAir = true;
+                if(upLeft.isEmpty()) upLeftAir = true;
+                if(upRight.isEmpty()) upRightAir = true;
+                //Sides
+                if(leftUp.isEmpty()) leftUpAir = true;
+                if(leftDown.isEmpty()) leftDownAir = true;
+                if(rightUp.isEmpty()) rightUpAir = true;
+                if(rightDown.isEmpty()) rightDownAir = true;
+
+                if(!collBottom) {
+                    downLeftAir = false;
+                    downRightAir = false;
+                }
+                if(!collTop) {
+                    upLeftAir = false;
+                    upRightAir = false;
+                }
+                if(!collRight) {
+                    rightUpAir = false;
+                    rightDownAir = false;
+                }
+                if(!collLeft) {
+                    leftUpAir = false;
+                    leftDownAir = false;
+                }
+
+                System.out.println("Right:" + rightUpAir + "|" + rightDownAir +
+                        " " + "Left:" + leftUpAir + "|" + leftDownAir +
+                        " " + "Up:" + upRightAir + "|" + upLeftAir +
+                        " " + "Down:" + downRightAir + "|" + downLeftAir);
+
+                boolean test1 = true, test2 = true, test3 = true, test4 = true;
+                //TEST CODE
+                /*
+                if(leftUpAir && leftDownAir ||
+                  downLeftAir && downRightAir ||
+                  upLeftAir && upRightAir) test1 = false;
+                if(rightUpAir && rightDownAir ||
+                        downLeftAir && downRightAir ||
+                        upLeftAir && upRightAir) test2 = false;
+                if(leftUpAir && leftDownAir ||
+                        rightDownAir && rightUpAir ||
+                        upLeftAir && upRightAir) test3 = false;
+                if(leftUpAir && leftDownAir ||
+                        downLeftAir && downRightAir ||
+                        rightDownAir && rightUpAir) test4 = false;*/
+                //TEST CODE
+                //if(collLeft || collTop || collBottom) test1 = false;
+                //if(collRight || collTop || collBottom) test2 = false;
+                //if(collLeft || collRight || collTop) test3 = false;
+                //if(collLeft || collBottom || collRight) test4 = false;
+
+
+                if(rightUpAir && rightDownAir && test1) {
+                    rightUpAir = false;
+                    rightDownAir = false;
+                    x += 1;
+                    y = Math.round(y/16)*16;
+                    WorldManager.getInstance().collWorld.update(this, x ,y);
+                }
+
+                if(leftUpAir && leftDownAir && test2) {
+                    leftUpAir = false;
+                    leftDownAir = false;
+                    x -= 1;
+                    y = Math.round(y/16)*16;
+                    WorldManager.getInstance().collWorld.update(this, x ,y);
+                }
+
+                if(downLeftAir && downRightAir && test3) {
+                    downLeftAir = false;
+                    downRightAir = false;
+                    float fY = y - 1;
+                    float fX = Math.round(x/16)*16;
+                    Response.Result res = WorldManager.getInstance().collWorld.check(this, fX, fY, CollFilter.getInstance().blockFilter);
+                    if(res.projectedCollisions.isEmpty()) {
+                        y -= 1;
+                        x = Math.round(x / 16) * 16;
+                        WorldManager.getInstance().collWorld.update(this, x, y);
+                    }
+                }
+
+                if(upLeftAir && upRightAir && test4) {
+                    System.out.println("Hey");
+                    upLeftAir = false;
+                    upRightAir = false;
+                    y += 1;
+                    x = Math.round(x/16)*16;
+                    WorldManager.getInstance().collWorld.update(this, x, y);
+                }
+
+                if(!downLeft.isEmpty()) downLeftAir = false;
+                if(!downRight.isEmpty()) downRightAir = false;
+                if(!upLeft.isEmpty()) upLeftAir = false;
+                if(!upRight.isEmpty()) upRightAir = false;
+                if(!leftUp.isEmpty()) leftUpAir = false;
+                if(!leftDown.isEmpty()) leftDownAir = false;
+                if(!rightUp.isEmpty()) rightUpAir = false;
+                if(!rightDown.isEmpty()) rightDownAir = false;
+            } else {
+                downLeftAir = false;
+                downRightAir = false;
+                upLeftAir = false;
+                upRightAir = false;
+                leftUpAir = false;
+                leftDownAir = false;
+                rightUpAir = false;
+                rightDownAir = false;
+            }
+
+            stuckInBlock = false;
             if (!hasGodMode) {
                 Response.Result res = WorldManager.getInstance().collWorld.move(this, x + vX, y + vY, CollFilter.getInstance().blockFilter);
-                boolean canGround = false;
+                collBottom = false;
+                collTop = false;
+                collLeft = false;
+                collRight = false;
                 for (int i = 0; i < res.projectedCollisions.size(); i++) {
                     Collision coll = res.projectedCollisions.get(i);
                     if (coll.normal.y == 1) {
-                        canGround = true;
+                        collBottom = true;
                     }
                     if (coll.normal.y == -1) {
-                        hitCeiling = true;
+                        collTop = true;
+                    }
+                    if(coll.normal.x == -1) {
+                        collRight = true;
+                    }
+                    if(coll.normal.x == 1) {
+                        collLeft = true;
                     }
                     if (coll.normal.x != 0) {
-                        vX = coll.normal.x / 1000f;
+                        vX = 0;
                     }
                     if (coll.overlaps) {
                         stuckInBlock = true;
                         break;
                     }
                 }
-                isGrounded = canGround;
             } else { //640, 480
                 x += vX;
                 y += vY;
@@ -204,7 +366,7 @@ public class Player extends GameObject {
                 vX = 0;
                 vY = 0;
             }
-            Rect rect = WorldManager.getInstance().collWorld.getRect(this);
+
             float _x, _y;
             if (!hasGodMode && !stuckInBlock) {
                 _x = rect.x;
@@ -218,22 +380,22 @@ public class Player extends GameObject {
                     x = _x;
                 } else {
                     vX = 0;
-                    x -= 1;
+                    x = (WorldManager.getInstance().EEWorld.worldWidth * 16) - 16;
                 }
             } else {
                 vX = 0;
-                x += 1;
+                x = 0;
             }
             if (_y <= 480) {
                 if (_y + 16 >= -(WorldManager.getInstance().EEWorld.worldHeight * 16 - 480 - 32)) {
                     y = _y;
                 } else {
                     vY = 0;
-                    y += 1;
+                    y = -(WorldManager.getInstance().EEWorld.worldHeight * 16)+496;
                 }
             } else {
                 vY = 0;
-                y -= 1;
+                y = 480;
             }
 
             //Auto align to grid. (do not autocorrect in liquid)
@@ -259,24 +421,30 @@ public class Player extends GameObject {
 
             }
 
-            if (imy != 0 || (ItemId.isLiquid(0) && !hasGodMode)) {
+            y = Math.abs(480-y); // temp invert y to comply with EE's code
+
+            if(imy != 0 || (ItemId.isLiquid(0) && !hasGodMode)){
                 moving = true;
-            } else if (diffY < 0.1 && diffY > -0.1) {
-                float ty = getCorrectY() % 16;
+            }else if(diffY < 0.1 && diffY > -0.1 ){
+                float ty = (y-16) % 16;
 
-                if (ty < 2) {
-                    if (ty < .2) {
+                if(ty < 2){
+                    if(ty < .2){
                         y = (int) y;
-                    } else y -= ty / 15;
-                } else if (ty > 14) {
+                    }else y -= ty/15;
+                }else if(ty > 14){
 
-                    if (ty > 15.8) {
+                    if(ty > 15.8){
                         y = (int) y;
                         y++;
-                    } else y += (ty - 14) / 15;
+                    }else y+= (ty-14)/15;
                 }
             }
 
+            y = (480-y); // re-invert the y.
+            // (better idea was to make y inverted all the time, and only invert at drawing but eh)
+
+            rect = WorldManager.getInstance().collWorld.getRect(this);
             diffX = 0;
             diffY = 0;
 

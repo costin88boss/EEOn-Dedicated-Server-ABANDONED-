@@ -8,13 +8,13 @@ public class CollFilter {
     private static CollFilter instance;
     public CollisionFilter testFilter = ((item, other) -> {
         if (other.userData instanceof BlockGroup.BaseBlock) {
-            return Response.cross;
+            return Response.slide;
         } else {
-            return null;
+            return Response.slide;
         }
     });
     public CollisionFilter blockFilter = (item, other) -> {
-        if (other.userData instanceof BlockGroup.BaseBlock) {
+        if (item.userData instanceof BlockGroup.BaseBlock || other != null && other.userData instanceof BlockGroup.BaseBlock) {
             return Response.slide;
         } else {
             return null;

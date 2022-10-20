@@ -137,7 +137,7 @@ public class JoinLeaveListener implements Listener {
                 }
             } else packet.newUsername = name;
             packet.x = 16;
-            packet.y = 480 - 16 - 16 * 5; //640, 480;
+            packet.y = 480 - 16;// - 16 * 5; //640, 480;
             WorldPacket world = new WorldPacket();
             List<BlockGroupPacket> blockGroupPackets = new ArrayList<>();
             for (BlockGroup group :
